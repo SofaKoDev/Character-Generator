@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Underdark Knight's Random Character Generator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="site-header">
+      <div class="brand">
+        <span class="brand-crest" aria-hidden="true">⚔</span>
+        <div>
+          <h1>Underdark Knight's Character Generator</h1>
+          <p class="subtitle">D&amp;D 3.5 Random Character Creator &bull; Remade from the 2015 Java Classic</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="randomAllBtn" class="btn btn-ghost" type="button" title="Randomize all inputs and roll immediately">
+          🎲 Quick Random
+        </button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <!-- Left Column: Character Forge Form -->
+      <section class="panel forge-panel" aria-labelledby="forge-heading">
+        <div class="panel-header">
+          <h2 id="forge-heading">Forge Character</h2>
+          <span class="badge">No Login Required</span>
+        </div>
+
+        <form id="characterForm" class="forge-form">
+          <div class="field">
+            <label for="charName">Character Name</label>
+            <div class="input-row">
+              <input
+                id="charName"
+                name="name"
+                type="text"
+                maxlength="48"
+                placeholder="e.g. Drizzt, Thrain, Lyra..."
+                required
+              >
+              <button id="randomNameBtn" class="btn btn-secondary" type="button" title="Generate a fantasy name">
+                Random
+              </button>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Gender</span>
+            <div id="genderGroup" class="segmented" role="radiogroup" aria-label="Gender"></div>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Race</span>
+            <div id="raceGroup" class="race-grid" role="radiogroup" aria-label="Race"></div>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Alignment</span>
+            <div id="alignmentGroup" class="alignment-grid" role="radiogroup" aria-label="Alignment"></div>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Dice Rolling Method</span>
+            <div id="diceGroup" class="dice-grid" role="radiogroup" aria-label="Dice Method"></div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-lg">
+              🎲 Roll Character
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Right Column: Active Preview + Saved Roster -->
+      <div class="right-column">
+        <!-- Active Sheet / Preview -->
+        <section class="panel sheet-panel" aria-labelledby="sheet-heading">
+          <div class="panel-header">
+            <h2 id="sheet-heading">Character Sheet</h2>
+            <span id="sheetStatus" class="status-pill hidden">Preview</span>
+          </div>
+
+          <div id="sheetEmpty" class="empty-state">
+            <div class="empty-icon" aria-hidden="true">📜</div>
+            <p>Choose your options and click <strong>Roll Character</strong> to generate a hero, or select a saved character below.</p>
+          </div>
+
+          <div id="sheetContent" class="sheet-content hidden">
+            <div class="sheet-banner">
+              <div>
+                <h3 id="sheetName" class="sheet-name"></h3>
+                <p id="sheetMeta" class="sheet-meta"></p>
+              </div>
+              <button id="copyTextBtn" class="btn btn-ghost btn-sm" type="button" title="Copy plain-text character sheet">
+                📋 Copy Text
+              </button>
+            </div>
+
+            <div class="vitals-row">
+              <div class="vital-card">
+                <span class="vital-label">Age</span>
+                <span id="sheetAge" class="vital-value"></span>
+              </div>
+              <div class="vital-card">
+                <span class="vital-label">Height</span>
+                <span id="sheetHeight" class="vital-value"></span>
+              </div>
+              <div class="vital-card">
+                <span class="vital-label">Weight</span>
+                <span id="sheetWeight" class="vital-value"></span>
+              </div>
+              <div class="vital-card">
+                <span class="vital-label">Roll Method</span>
+                <span id="sheetMethod" class="vital-value"></span>
+              </div>
+            </div>
+
+            <div class="abilities-section">
+              <h4 class="section-label">Ability Scores</h4>
+              <div id="abilitiesGrid" class="abilities-grid"></div>
+            </div>
+
+            <!-- Preview Actions (Unsaved Character) -->
+            <div id="previewActions" class="sheet-actions hidden">
+              <button id="saveCharBtn" class="btn btn-primary" type="button">✓ Keep &amp; Save Character</button>
+              <button id="rerollBtn" class="btn btn-secondary" type="button">↻ Reroll Stats</button>
+              <button id="discardBtn" class="btn btn-ghost" type="button">Discard</button>
+            </div>
+
+            <!-- Saved Character Actions -->
+            <div id="savedActions" class="sheet-actions-stack hidden">
+              <div class="alter-race-bar">
+                <label for="alterRaceSelect">Alter Race:</label>
+                <select id="alterRaceSelect" class="select-input"></select>
+                <button id="applyRaceBtn" class="btn btn-secondary btn-sm" type="button">Apply Race Change</button>
+              </div>
+              <div class="danger-row">
+                <button id="eraseCharBtn" class="btn btn-danger btn-sm" type="button">☠ Erase Character</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Saved Characters Roster -->
+        <section class="panel roster-panel" aria-labelledby="roster-heading">
+          <div class="panel-header">
+            <h2 id="roster-heading">Saved Roster</h2>
+            <span id="rosterCount" class="badge">0</span>
+          </div>
+          <div id="rosterEmpty" class="empty-state compact">
+            <p>No characters saved yet. Saved heroes persist locally in your browser.</p>
+          </div>
+          <ul id="rosterList" class="roster-list"></ul>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Perma-Death Confirmation Modal -->
+  <div id="eraseModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="eraseModalTitle">
+    <div class="modal-card">
+      <h3 id="eraseModalTitle" class="modal-title">⚠ Perma-Death Warning</h3>
+      <p id="eraseModalText" class="modal-body"></p>
+      <div class="modal-actions">
+        <button id="cancelEraseBtn" class="btn btn-ghost" type="button">Back</button>
+        <button id="confirmEraseBtn" class="btn btn-danger" type="button">Erase Character</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
